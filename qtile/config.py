@@ -23,15 +23,17 @@ musik = "flatpak run dev.alextren.Spot"
 browser = 'firefox'
 terminal = 'alacritty'
 text_editor = "gnome-text-editor"
-file_manager1 = 'files'
+file_manager1 = 'thunar'
 file_launcher1 = 'rofi -show drun'
 file_launcher2 = 'dmenu_run'
 email_cliant = 'thunderbird'
 process_viewer = terminal + ' -e bpytop'
 python_shell = terminal+" + -e python"
 soundmixer = "qpwgraph"
+password_manager = "bitwarden-desktop"
+network_monitor = terminal + " -e bpytop -b net"
 
-wallpaper = "~/.config/qtile/f37-01-night.png"
+wallpaper = "/usr/share/backgrounds/archlinux/archbtw.png"
 
 mbfs = colors.mbfs()
 doomOne = colors.doomOne()
@@ -41,10 +43,11 @@ nord = colors.nord()
 gruvbox = colors.gruvbox()
 
 # Choose colorscheme
-colorscheme = mbfs
+colorscheme = dracula
 
 # Colorschme funcstion
 colors, backgroundColor, foregroundColor, workspaceColor, foregroundColorTwo = colorscheme
+
 
 
 # KEYBINDINGS
@@ -154,22 +157,32 @@ groups.append(ScratchPad('scratchpad', [
              width=0.8, height=0.8, x=0.1, y=0.1),
     DropDown('terminal', terminal, width=0.8,
              height=0.8, x=0.1, y=0.1, opacity=0.9),
+    DropDown('file_manager', file_manager1, width=0.8,
+             height=0.8, x=0.1, y=0.1, opacity=0.9),
     DropDown('text_editor', text_editor, width=0.8,
              height=0.8, x=0.1, y=0.1, opacity=0.9),
     DropDown('process_viewer', process_viewer, width=0.8,
              height=0.8, x=0.1, y=0.1, opacity=0.9),
+    DropDown('network_monitor', network_monitor, width=0.29,
+             height=0.8, x=0.67, y=0.1, opacity=0.9),
     DropDown('soundmixer', soundmixer,match=Match(wm_class="qpwgraph"), width=0.8,
              height=0.8, x=0.1, y=0.1, opacity=0.9),
+    DropDown('password_manager', password_manager, width=0.8,
+             height=0.8, x=0.1, y=0.1, opacity=0.9),
+
 ]))
 # extend keys list with keybinding for scratchpad
 keys.extend([
     Key([scratchpad_key], "m", lazy.group['scratchpad'].dropdown_toggle('musik')),
     Key([scratchpad_key], "t", lazy.group['scratchpad'].dropdown_toggle('terminal')),
+    Key([scratchpad_key], "f", lazy.group['scratchpad'].dropdown_toggle('file_manager')),
     Key([scratchpad_key], "n",
         lazy.group['scratchpad'].dropdown_toggle('text_editor')),
     Key([scratchpad_key], "y",
         lazy.group['scratchpad'].dropdown_toggle('process_viewer')),
+    Key([scratchpad_key], "n", lazy.group['scratchpad'].dropdown_toggle('network_monitor')),
     Key([scratchpad_key], "s", lazy.group['scratchpad'].dropdown_toggle('soundmixer')),
+    Key([scratchpad_key], "x", lazy.group['scratchpad'].dropdown_toggle('password_manager')),
 ])
 
 layouts = [
