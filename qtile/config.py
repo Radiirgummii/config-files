@@ -19,6 +19,7 @@ import colors
 mod = "mod4"
 scratchpad_key = "mod1"
 
+calculator = "speedcrunch"
 musik = "flatpak run dev.alextren.Spot"
 browser = 'firefox'
 terminal = 'alacritty'
@@ -33,7 +34,7 @@ soundmixer = "qpwgraph"
 password_manager = "bitwarden-desktop"
 network_monitor = terminal + " -e bpytop -b net"
 
-wallpaper = "/usr/share/backgrounds/archlinux/archbtw.png"
+wallpaper = ""
 
 mbfs = colors.mbfs()
 doomOne = colors.doomOne()
@@ -51,7 +52,9 @@ colors, backgroundColor, foregroundColor, workspaceColor, foregroundColorTwo = c
 
 
 # KEYBINDINGS
-
+def setup_docked():
+    subprocess.Popen("/home/user/.screenlayout/screens_docked.sh")
+    lazy.restart()
 # Window keybindings
 keys = [
     # Switch between windows
@@ -97,6 +100,7 @@ keys = [
     # Close, logout and reset Qtile
     Key([mod, "control"], "r", lazy.restart(), desc="Restart Qtile"),
     Key([mod, "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
+    Key([mod, "control"], "d", setup_docked()),
 
     # Applications
 
@@ -169,7 +173,7 @@ groups.append(ScratchPad('scratchpad', [
              height=0.8, x=0.1, y=0.1, opacity=0.9),
     DropDown('password_manager', password_manager, width=0.8,
              height=0.8, x=0.1, y=0.1, opacity=0.9),
-
+    DropDown("calculator", calculator, width=.29, height=.8, x=.67, y=.1 )
 ]))
 # extend keys list with keybinding for scratchpad
 keys.extend([
@@ -183,6 +187,7 @@ keys.extend([
     Key([scratchpad_key], "n", lazy.group['scratchpad'].dropdown_toggle('network_monitor')),
     Key([scratchpad_key], "s", lazy.group['scratchpad'].dropdown_toggle('soundmixer')),
     Key([scratchpad_key], "x", lazy.group['scratchpad'].dropdown_toggle('password_manager')),
+    Key([scratchpad_key], "c", lazy.group["scratchpad"].dropdown_toggle("calculator"))
 ])
 
 layouts = [
@@ -319,117 +324,7 @@ screens = [
             ],
             20,
         ),),
-    Screen(
-        wallpaper=wallpaper,
-        wallpaper_mode='stretch',
-        top=bar.Bar(
-            [
-                widget.Image(
-                    filename='~/.config/qtile/icons/python.png',
-                    scale='False',
-                    margin_x=8,
-                    mouse_callbacks={
-                        'Button1': lambda: qtile.cmd_spawn(file_launcher2)}
-                ),
-                widget.GroupBox(
-                    padding=4,
-                    active=colors[2],
-                    inactive=colors[1],
-                    highlight_color=[backgroundColor, workspaceColor],
-                    highlight_method='line',
-                ),
-                widget.Prompt(
-                ),
-                widget.TextBox(
-                    text='\u25e2',
-                    padding=0,
-                    fontsize=50,
-                    background=backgroundColor,
-                    foreground=workspaceColor),
-                widget.CurrentLayout(
-                    scale=0.7,
-                    background=workspaceColor,
-                ),
-                widget.TextBox(
-                    text='\u25e2',
-                    padding=0,
-                    fontsize=50,
-                    background=workspaceColor,
-                    foreground=backgroundColor
-                ),
-                widget.WindowName(
-                    foreground=colors[5],
-                ),
-                widget.Chord(
-                    chords_colors={
-                        'launch': (foregroundColor, foregroundColor),
-                    },
-                    name_transform=lambda name: name.upper(),
-                ),
-                widget.TextBox(
-                    text='\u25e2',
-                    padding=0,
-                    fontsize=50,
-                    background=backgroundColor,
-                    foreground=foregroundColorTwo
-                ),
-                widget.TextBox(
-                    text='\u25e2',
-                    padding=0,
-                    fontsize=14,
-                    background=foregroundColorTwo,
-                    foreground=foregroundColorTwo
-                ),
-                widget.Net(
-                    interface="wlp4s0",
-                    format=' {down} ↓↑ {up}',
-                    foreground=colors[7],
-                    background=foregroundColorTwo,
-                    padding=8
-                ),
-                widget.CheckUpdates(
-                    update_interval=3600,
-                    distro="Ubuntu",
-                    display_format="Updates: {updates} ",
-                    no_update_string=" No Updates",
-                    colour_have_updates=colors[9],
-                    colour_no_updates=colors[5],
-                    padding=8,
-                    background=foregroundColorTwo
-                ),
-                widget.Volume(
-                    foreground=colors[4],
-                    background=foregroundColorTwo,
-                    fmt='Volume: {}',
-                    padding=8
-                ),
-                widget.TextBox(
-                    text='\u25e2',
-                    padding=0,
-                    fontsize=50,
-                    background=foregroundColorTwo,
-                    foreground=backgroundColor
-                ),
-                widget.Clock(format=' %a, %d. %m. %Y.',
-                             foreground=colors[10],
-                             background=backgroundColor,
-                             padding=8
-                             ),
-                widget.Clock(format=' %I:%M %p',
-                             foreground=colors[5],
-                             background=backgroundColor,
-                             padding=8
-                             ),
-                widget.QuickExit(
-                    fmt=' Exit',
-                    foreground=colors[9],
-                    padding=8
-                ),
-            ],
-            20,
-        ),)
 ]
-
 # Drag floating layouts.
 mouse = [
     Drag([mod], "Button1", lazy.window.set_position_floating(),
@@ -450,13 +345,18 @@ floating_layout = layout.Floating(border_focus=colors[4], float_rules=[
     Match(wm_class='ssh-askpass'),  # ssh-askpass
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
-    Match(wm_class="qjackctl")
+    Match(wm_class="qjackctl"),
+    Match(wm_class="gui.py")
 ])
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
 
-lazy.spawn("/home/radiirgummii/.screenlayout/screens.sh")
+
+@hook.subscribe.startup_once
+def autostart_once():
+#    lazy.spawn("/home/radiirgummii/.screenlayout/screens.sh")
+    subprocess.Popen(["/usr/bin/polkit-dumb-agent"])
 
 # If things like steam games want to auto-minimize themselves when losing
 # focus, should we respect this or not?
