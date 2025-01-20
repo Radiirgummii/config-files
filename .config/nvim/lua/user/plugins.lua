@@ -2,19 +2,19 @@
 
 local lazy = {}
 
-function lazy.install(path)
-  if not vim.loop.fs_stat(path) then
-    print('Installing lazy.nvim....')
-    vim.fn.system({
-      'git',
-      'clone',
-      '--filter=blob:none',
-      'https://github.com/folke/lazy.nvim.git',
-      '--branch=stable', -- latest stable release
-      path,
-    })
-  end
+lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+
+if not (vim.uv or vim.loop).fs_stat(lazy.path) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazy.path,
+  })
 end
+
 
 function lazy.setup(plugins)
   if vim.g.plugins_ready then
@@ -30,7 +30,9 @@ function lazy.setup(plugins)
 end
 
 
-lazy.path = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+
+
+
 
 lazy.opts = {}
 
